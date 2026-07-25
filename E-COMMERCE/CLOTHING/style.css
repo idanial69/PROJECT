@@ -1,0 +1,666 @@
+/* reset a couple of browser defaults so spacing is predictable */
+html {
+  scroll-behavior: smooth; /* makes clicking an anchor link (like #shop) glide instead of jump */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #26261f;
+  background: #ece6d8;
+}
+
+header {
+  position: relative;   /* so the mobile nav dropdown can position itself relative to the header, not the whole page */
+  z-index: 50;           /* keeps the header (and its dropdown nav) stacked above the hero's background layers */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* left | center | right, center is a fixed-width middle column */
+  align-items: center;        /* vertically center everything */
+  padding: 18px 36px;
+  background: #ece6d8;
+  border-bottom: 1px solid #c6bc9f;
+}
+
+.logo {
+  justify-self: start; /* pin to the left column */
+}
+
+nav {
+  justify-self: center; /* pin to the middle column — this is the true center now */
+}
+
+.header-actions {
+  justify-self: end;    /* pin the whole group to the right column */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+nav {
+  display: flex;
+  gap: 28px;                  /* space between links */
+}
+
+nav a {
+  position: relative;         /* needed so the underline below can position itself */
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding-bottom: 4px;
+}
+
+/* an invisible underline we grow on hover, instead of one that just appears */
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;                  /* starts at zero width */
+  height: 1.5px;
+  background: #4a5a3f;
+  transition: width 0.25s ease; /* animate the width change smoothly */
+}
+
+nav a:hover::after {
+  width: 100%;                /* grows to full width on hover */
+}
+
+nav a:hover {
+  color: #4a5a3f;
+  transition: color 0.25s ease;
+}
+
+.cart-btn {
+  display: flex;              /* lets the icon and text sit side by side */
+  align-items: center;
+  gap: 8px;                   /* space between icon and text */
+  background: #26261f;
+  color: #ece6d8;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cart-btn:hover {
+  background: #4a5a3f;
+  transform: translateY(-1px); /* tiny lift on hover */
+}
+
+/* hidden on desktop — only shows up once the media query below reveals it */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #26261f;
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (max-width: 720px) {
+  header {
+    grid-template-columns: 1fr auto; /* drop the centered nav column — nav moves into a dropdown instead */
+  }
+
+  nav {
+    /* becomes a dropdown panel, hidden until toggled open */
+    position: absolute;
+    top: 100%;               /* sits right below the header */
+    left: 0;
+    right: 0;
+    width: 100%;              /* explicit width, so it can't shrink to fit its content */
+    justify-self: stretch;    /* overrides the "center" alignment used in the desktop grid layout */
+    background: #ece6d8;    /* fully opaque so nothing behind it shows through */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12); /* separates it visually from whatever's behind it */
+    border-bottom: 1px solid #c6bc9f;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    max-height: 0;            /* collapsed by default */
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+
+  nav.open {
+    max-height: 240px;         /* expands open to reveal the links */
+    padding: 12px 0;
+  }
+
+  nav a {
+    padding: 12px 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .menu-toggle {
+    display: block;           /* only appears at this screen size */
+  }
+
+  .cart-btn .cart-label {
+    display: none;            /* hide "Cart (0)" text, keep just the icon, to save space */
+  }
+}
+
+/* ---------- HERO ---------- */
+
+.hero {
+  position: relative;   /* lets the background layers position themselves relative to THIS box */
+  overflow: hidden;     /* keeps the background layers from spilling outside the hero */
+}
+
+/* each background layer sits exactly on top of the hero, filling it completely */
+.hero-bg {
+  position: absolute;
+  inset: 0;             /* shorthand for top:0; right:0; bottom:0; left:0; */
+  opacity: 0;           /* invisible by default — the animation controls when it shows */
+  animation: slideFade 12s infinite; /* run the slideFade animation, 12s per loop, forever */
+}
+
+.bg1 {
+  /* two layers, comma-separated: a dark gradient ON TOP for readability, photo underneath */
+  background:
+    linear-gradient(135deg, rgba(74,90,63,0.55), rgba(38,48,31,0.65)),
+    url('https://picsum.photos/seed/field-jacket/1600/900') center/cover no-repeat;
+  animation-delay: 0s;
+}
+.bg2 {
+  background:
+    linear-gradient(135deg, rgba(178,81,45,0.5), rgba(58,26,15,0.65)),
+    url('https://picsum.photos/seed/field-denim/1600/900') center/cover no-repeat;
+  animation-delay: 4s;
+}
+.bg3 {
+  background:
+    linear-gradient(135deg, rgba(38,48,58,0.55), rgba(20,26,32,0.7)),
+    url('https://picsum.photos/seed/field-boots/1600/900') center/cover no-repeat;
+  animation-delay: 8s;
+}
+
+/* keyframes describe opacity over the animation's timeline, as percentages of the total duration.
+   With 3 layers sharing one 12s loop, each layer gets a ~4s "turn" to be visible. */
+@keyframes slideFade {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  25%  { opacity: 1; }
+  33%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.hero-content {
+  position: relative;   /* relative + a higher stacking order puts text ABOVE the background layers */
+  z-index: 1;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 90px 24px 70px;
+  color: #fdfbf5;       /* lighter text so it reads over the dark gradients */
+}
+
+.eyebrow {
+  display: inline-block;      /* lets padding/border work like a block, but sits inline */
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fdfbf5;
+  border: 1px solid #fdfbf5;
+  border-radius: 20px;
+  padding: 5px 14px;
+  margin-bottom: 18px;
+}
+
+.hero-content h1 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem); /* scales between 1.8rem and 2.6rem based on viewport width */
+  line-height: 1.15;
+  margin: 0 0 20px;
+}
+
+.hero-content p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #ece6d8;
+  margin: 0 0 32px;
+}
+
+/* ---------- FILTER TABS ---------- */
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;            /* lets buttons drop to a new line on small screens instead of overflowing */
+  max-width: 1180px;
+  margin: 36px auto 0;
+  padding: 0 36px;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid #c6bc9f;
+  color: #26261f;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: #4a5a3f;
+}
+
+/* the currently selected tab looks different from the rest */
+.filter-btn.active {
+  background: #26261f;
+  color: #ece6d8;
+  border-color: #26261f;
+}
+
+/* ---------- PRODUCT GRID ---------- */
+
+.grid {
+  display: grid;
+  /* auto-fill: fit as many columns as will fit; each is at least 220px, but grows to share leftover space */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 26px;
+  max-width: 1180px;
+  margin: 26px auto 0;
+  padding: 0 36px 100px;
+}
+
+.product {
+  background: #f3efe3;
+  border: 1px solid #c6bc9f;
+  border-radius: 4px;
+  overflow: hidden;        /* keeps the image's corners clipped to match the card's rounded corners */
+  display: flex;
+  flex-direction: column;  /* stack image, then info, vertically */
+}
+
+.product-img {
+  position: relative;
+  aspect-ratio: 1 / 1;     /* keeps the image area perfectly square, whatever width the card ends up */
+}
+
+.product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;       /* fills the square without distorting the photo's proportions */
+  display: block;
+}
+
+.product-img .tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fdfbf5;
+  border: 1px solid #26261f;
+  border-radius: 2px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  transform: rotate(3deg);  /* small tilt gives it a "hang tag" feel */
+}
+
+.new-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #b2512d;
+  color: #fff;
+  border-radius: 2px;
+  padding: 4px 9px;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.product-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-info .cat {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4a5a3f;
+}
+
+.product-info h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.product-info p {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #55554a;
+  line-height: 1.4;
+}
+
+.add-btn {
+  background: transparent;
+  border: 1.5px solid #26261f;
+  color: #26261f;
+  padding: 9px 0;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.add-btn:hover {
+  background: #26261f;
+  color: #ece6d8;
+}
+
+.add-btn:disabled {
+  background: #4a5a3f;
+  border-color: #4a5a3f;
+  color: #fff;
+  cursor: default;
+}
+
+/* ---------- CART DRAWER ---------- */
+
+/* a dark, semi-transparent layer covering the whole page, behind the drawer */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38,38,31,0.4);
+  opacity: 0;
+  pointer-events: none;    /* invisible AND unclickable when closed */
+  transition: opacity 0.2s ease;
+  z-index: 90;
+}
+
+.overlay.open {
+  opacity: 1;
+  pointer-events: auto;    /* now it blocks clicks and can be clicked itself, to close the drawer */
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(380px, 90vw);
+  background: #ece6d8;
+  border-left: 1px solid #c6bc9f;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);           /* pushed fully off-screen to the right */
+  transition: transform 0.25s ease;       /* animate that push smoothly */
+}
+
+.drawer.open {
+  transform: translateX(0);              /* slides fully into view */
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 22px;
+  border-bottom: 1px solid #c6bc9f;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.drawer-items {
+  flex: 1;
+  overflow-y: auto;         /* scrolls if the cart has lots of items */
+  padding: 10px 22px;
+}
+
+.empty-cart {
+  text-align: center;
+  opacity: 0.6;
+  padding: 50px 10px;
+  font-size: 0.9rem;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #c6bc9f;
+}
+
+.cart-item h4 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.cart-item .price {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.qty-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.qty-controls button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #c6bc9f;
+  background: #f3efe3;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.drawer-footer {
+  border-top: 1px solid #c6bc9f;
+  padding: 18px 22px 24px;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #b2512d;
+  color: #fff;
+  border: none;
+  padding: 13px 0;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.checkout-btn:hover {
+  background: #93401f;
+}
+
+/* ---------- FOOTER ---------- */
+
+.site-footer {
+  background: #26261f;
+  color: #ece6d8;
+  margin-top: 40px;
+}
+
+.footer-grid {
+  display: grid;
+  /* 4 columns: first one twice as wide as the other three (for the brand blurb) */
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 36px 36px;
+}
+
+.footer-col h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 16px;
+  color: #c6bc9f;
+}
+
+.footer-logo {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+}
+
+.footer-col p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #b8b19f;
+  margin: 0;
+}
+
+.footer-col a {
+  display: block;              /* stacks each link on its own line */
+  font-size: 0.88rem;
+  color: #ece6d8;
+  text-decoration: none;
+  margin-bottom: 10px;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.footer-col a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.social-links {
+  display: flex;
+  gap: 14px;
+}
+
+.social-links a {
+  display: flex;               /* overrides the block display above, just for these icon links */
+  color: #ece6d8;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.social-links a:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 36px 28px;
+  border-top: 1px solid #4a4a3f;
+  font-size: 0.75rem;
+  color: #b8b19f;
+}
+
+@media (max-width: 720px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr; /* drop to 2 columns on small screens */
+  }
+}
+
+/* ---------- ABOUT ---------- */
+
+.about-section {
+  background: #d9cdb4;   /* the "canvas" tone from the brand palette — distinct from the page's bone background */
+  margin-top: 40px;
+}
+
+.about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* two equal columns: text, then image */
+  align-items: center;
+  gap: 50px;
+  max-width: 1180px;
+  margin: 0 auto;                  /* centers the content within the full-width background */
+  padding: 60px 36px;
+}
+
+.about-text .eyebrow {
+  color: #4a5a3f;
+  border-color: #4a5a3f;
+}
+
+.about-text h2 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 16px 0 18px;
+}
+
+.about-text p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #55554a;
+}
+
+.about-img img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+@media (max-width: 720px) {
+  .about {
+    grid-template-columns: 1fr;   /* stack into a single column on small screens */
+  }
+  .about-img {
+    order: -1;                    /* shows the image ABOVE the text on mobile */
+  }
+}
+
+.cta {
+  display: inline-block;   /* needed since it's now an <a>, which is inline by default */
+  text-decoration: none;
+  background: #b2512d;
+  color: #fff;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cta:hover {
+  background: #93401f;
+  transform: translateY(-1px);
+}
