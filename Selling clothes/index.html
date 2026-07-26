@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Closet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <img src="images/logo.png" alt="Danisya.co logo" class="logo-img">
+    <div class="header-text">
+      <div class="logo">DANISYA.CO</div>
+      <p class="tagline">preloved clothes, good condition, fair prices</p>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-bg" data-index="0" style="background-image: linear-gradient(180deg, rgba(30,26,20,0.15), rgba(20,17,13,0.55)), url('https://picsum.photos/seed/closet-1/1400/900');"></div>
+    <div class="hero-bg" data-index="1" style="background-image: linear-gradient(180deg, rgba(30,26,20,0.15), rgba(20,17,13,0.55)), url('https://picsum.photos/seed/closet-2/1400/900');"></div>
+    <div class="hero-bg" data-index="2" style="background-image: linear-gradient(180deg, rgba(30,26,20,0.15), rgba(20,17,13,0.55)), url('https://picsum.photos/seed/closet-3/1400/900');"></div>
+
+    <div class="hero-content">
+      <h1>Preloved, well-kept, ready for a new closet.</h1>
+      <p>Everything here comes from my own wardrobe — worn gently, stored well, priced fairly.</p>
+    </div>
+
+    <button class="hero-arrow prev" id="heroPrev" aria-label="Previous photo">&#10094;</button>
+    <button class="hero-arrow next" id="heroNext" aria-label="Next photo">&#10095;</button>
+
+    <div class="hero-dots" id="heroDots">
+      <button class="dot active" data-slide="0" aria-label="Go to photo 1"></button>
+      <button class="dot" data-slide="1" aria-label="Go to photo 2"></button>
+      <button class="dot" data-slide="2" aria-label="Go to photo 3"></button>
+    </div>
+  </section>
+
+  <section class="about-section" id="about">
+    <div class="about">
+      <div class="about-text">
+        <span class="eyebrow">A little about me</span>
+        <h2>Hi, I'm DANISYA.CO — welcome to my closet.</h2>
+        <p>I love clothes, but I don't love clutter — so instead of letting good pieces sit unworn, I'm passing them on. Everything listed here comes straight from my own wardrobe: gently worn, well cared for, and priced fairly. If something catches your eye, just message me — I'm happy to answer questions or send more photos before you decide.</p>
+      </div>
+      <div class="about-img">
+        <img src="images/wardrobe.jfif" alt="A peek into my wardrobe">
+      </div>
+    </div>
+  </section>
+
+  <section class="items" id="items">
+    <h2 class="section-title">Available Now</h2>
+
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by item name...">
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="outerwear">Outerwear</button>
+      <button class="filter-btn" data-filter="bottoms">Bottoms</button>
+      <button class="filter-btn" data-filter="tops">Tops</button>
+      <button class="filter-btn" data-filter="dresses">Dresses</button>
+      <button class="filter-btn" data-filter="tudung">Tudung</button>
+      <button class="filter-btn" data-filter="new">New Arrivals</button>
+    </div>
+
+    <div class="item-grid" id="itemGrid"></div>
+
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">DANISYA.CO</div>
+      <p class="footer-line">Preloved clothes from my own closet — message me anytime.</p>
+
+      <div class="footer-links">
+        <a href="https://wa.me/60126124186" target="_blank">WhatsApp</a>
+        <a href="https://instagram.com/" target="_blank">Instagram</a>
+        <a href="mailto:hello@danisya.co">Email</a>
+      </div>
+
+      <p class="footer-copy">© 2026 Danisya.co · All items sold as-is, preloved condition.</p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="deliveryOverlay"></div>
+  <div class="delivery-modal" id="deliveryModal">
+    <h3>How would you like to get it?</h3>
+    <p class="modal-item-name" id="modalItemName"></p>
+    <button class="modal-option" id="choosePickup">
+      <span class="option-title">Self Pickup</span>
+      <span class="option-note">No extra fee</span>
+    </button>
+    <button class="modal-option" id="chooseDelivery">
+      <span class="option-title">Delivery</span>
+      <span class="option-note">~RM5 for most orders (under 3kg) — more for bulkier orders, we'll confirm together</span>
+    </button>
+    <button class="modal-cancel" id="cancelModal">Cancel</button>
+  </div>
+
+  <script src="items.js"></script>
+  <script>
+    // ---------- HERO SLIDER ----------
+    const slides = document.querySelectorAll('.hero-bg');
+    const dots = document.querySelectorAll('.dot');
+    const heroSection = document.querySelector('.hero');
+    let currentSlide = 0;
+
+    // positions every slide relative to whichever one is "current":
+    // current sits at 0%, ones before it wait off-screen left, ones after wait off-screen right
+    function updateSlides() {
+      slides.forEach((slide, i) => {
+        if (i === currentSlide) {
+          slide.style.transform = 'translateX(0%)';
+        } else if (i < currentSlide) {
+          slide.style.transform = 'translateX(-100%)';
+        } else {
+          slide.style.transform = 'translateX(100%)';
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    function goToSlide(index) {
+      // wraps around: after the last slide, go back to 0; before the first, go to the last
+      currentSlide = (index + slides.length) % slides.length;
+      updateSlides();
+    }
+
+    document.getElementById('heroNext').addEventListener('click', () => goToSlide(currentSlide + 1));
+    document.getElementById('heroPrev').addEventListener('click', () => goToSlide(currentSlide - 1));
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => goToSlide(i));
+    });
+
+    // auto-advance every 4 seconds
+    let autoSlide = setInterval(() => goToSlide(currentSlide + 1), 4000);
+
+    // pause auto-advancing while the mouse is hovering the hero, resume when it leaves
+    heroSection.addEventListener('mouseenter', () => clearInterval(autoSlide));
+    heroSection.addEventListener('mouseleave', () => {
+      autoSlide = setInterval(() => goToSlide(currentSlide + 1), 4000);
+    });
+
+    updateSlides(); // set the correct starting positions on page load
+
+    // item data now lives in items.js (loaded via <script src="items.js"> below), not here
+
+    const itemGrid = document.getElementById('itemGrid');
+    const paginationEl = document.getElementById('pagination');
+    const itemsPerPage = 8;
+
+    let currentFilter = 'all'; // which category/tab is selected
+    let currentPage = 1;       // which page of results we're viewing
+    let searchTerm = '';       // whatever's currently typed in the search box
+
+    // builds one item's card HTML as a string, using its data
+    function itemCardHTML(item) {
+      return `
+        <div class="item-card ${item.isSold ? 'sold' : ''}" data-category="${item.category}" data-new="${item.isNew}" data-name="${item.name}" data-price="${item.price}">
+          <div class="item-img">
+            ${item.isNew && !item.isSold ? '<span class="new-badge">New</span>' : ''}
+            ${item.isSold ? '<span class="sold-badge">Sold</span>' : ''}
+            <img src="${item.image}" alt="${item.name}">
+          </div>
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p class="details">${item.details}</p>
+            <p class="price">RM${item.price}</p>
+            <button class="whatsapp-btn" ${item.isSold ? 'disabled' : ''}>${item.isSold ? 'Sold Out' : 'Message to buy'}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // returns only the items matching whichever filter tab AND search term are currently active
+    function getFilteredItems() {
+      let result = items;
+
+      if (currentFilter === 'new') {
+        result = result.filter(item => item.isNew);
+      } else if (currentFilter !== 'all') {
+        result = result.filter(item => item.category === currentFilter);
+      }
+
+      if (searchTerm.trim() !== '') {
+        // toLowerCase() on both sides makes the search case-insensitive
+        result = result.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      }
+
+      return result;
+    }
+
+    // rebuilds both the item grid AND the pagination controls, based on
+    // the current filter and current page — call this any time either one changes
+    function renderGrid() {
+      const filtered = getFilteredItems();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+
+      // keep currentPage valid in case a filter change makes it out of range
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * itemsPerPage;
+      const pageItems = filtered.slice(start, start + itemsPerPage); // only this page's slice
+
+      itemGrid.innerHTML = pageItems.map(itemCardHTML).join('');
+      attachWhatsappHandlers();
+      renderPagination(totalPages);
+    }
+
+    // builds the Prev / page numbers / Next controls
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = ''; // no controls needed if everything fits on one page
+        return;
+      }
+
+      let html = `<button class="page-btn" id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>&#10094; Prev</button>`;
+
+      for (let page = 1; page <= totalPages; page++) {
+        html += `<button class="page-btn page-number ${page === currentPage ? 'active' : ''}" data-page="${page}">${page}</button>`;
+      }
+
+      html += `<button class="page-btn" id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>Next &#10095;</button>`;
+
+      paginationEl.innerHTML = html;
+
+      document.getElementById('prevPage').addEventListener('click', () => {
+        currentPage--;
+        renderGrid();
+      });
+      document.getElementById('nextPage').addEventListener('click', () => {
+        currentPage++;
+        renderGrid();
+      });
+      document.querySelectorAll('.page-number').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = parseInt(btn.dataset.page);
+          renderGrid();
+        });
+      });
+    }
+
+    // ---------- FILTER TABS ----------
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        currentFilter = button.dataset.filter;
+        currentPage = 1; // always jump back to page 1 when switching filters
+        renderGrid();
+      });
+    });
+
+    // ---------- SEARCH ----------
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', () => {
+      searchTerm = searchInput.value;
+      currentPage = 1; // reset to page 1 whenever the search changes
+      renderGrid();
+    });
+
+    // ---------- MESSAGE TO BUY (per item, via pickup/delivery modal) ----------
+    // 👇 replace this with your real WhatsApp number: country code + number, no +, no spaces, no leading 0
+    const whatsappNumber = '60126124186';
+
+    const deliveryOverlay = document.getElementById('deliveryOverlay');
+    const deliveryModal = document.getElementById('deliveryModal');
+    const modalItemName = document.getElementById('modalItemName');
+
+    let selectedItem = null; // remembers which item's button was clicked, until a choice is made
+
+    function openDeliveryModal(name, price) {
+      selectedItem = { name, price };
+      modalItemName.textContent = `${name} — RM${price}`;
+      deliveryOverlay.classList.add('open');
+      deliveryModal.classList.add('open');
+    }
+
+    function closeDeliveryModal() {
+      deliveryOverlay.classList.remove('open');
+      deliveryModal.classList.remove('open');
+      selectedItem = null;
+    }
+
+    function sendWhatsappMessage(method) {
+      const { name, price } = selectedItem;
+
+      const note = method === 'delivery'
+        ? '\n\nDelivery please — I understand it\'s around RM5 for orders under 3kg, more if it\'s heavier/bulkier.'
+        : '\n\nI\'ll self pickup.';
+
+      const message = `Hi! Is the "${name}" (RM${price}) still available?${note}`;
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+      window.open(url, '_blank');
+      closeDeliveryModal();
+    }
+
+    document.getElementById('choosePickup').addEventListener('click', () => sendWhatsappMessage('pickup'));
+    document.getElementById('chooseDelivery').addEventListener('click', () => sendWhatsappMessage('delivery'));
+    document.getElementById('cancelModal').addEventListener('click', closeDeliveryModal);
+    deliveryOverlay.addEventListener('click', closeDeliveryModal);
+
+    // attaches click listeners to whatever .whatsapp-btn elements currently exist
+    function attachWhatsappHandlers() {
+      document.querySelectorAll('.whatsapp-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const card = button.closest('.item-card');
+          openDeliveryModal(card.dataset.name, card.dataset.price);
+        });
+      });
+    }
+
+    renderGrid(); // build the grid on page load
+  </script>
+
+</body>
+</html>
